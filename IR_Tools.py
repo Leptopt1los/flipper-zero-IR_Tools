@@ -1,15 +1,15 @@
 from config import RAW_DATA_COMPARSION_LIMIT
 
 class IR_Signal:
-    def __init__(self, name=None, type=None, protocol=None, address=None, command=None, frequency=None, duty_cycle=None, data=None):
-        self.name = None
-        self.type = None
-        self.protocol = None
-        self.address = None
-        self.command = None
-        self.frequency = None
-        self.duty_cycle = None
-        self.data = None
+    def __init__(self, name:str=None, type:str=None, protocol:str=None, address:str=None, command:str=None, frequency:str=None, duty_cycle:str=None, data:list=None):
+        self.__name__ = None
+        self.__type__ = None
+        self.__protocol__ = None
+        self.__address__ = None
+        self.__command__ = None
+        self.__frequency__ = None
+        self.__duty_cycle__ = None
+        self.__data__ = None
 
         if name is not None:
             self.set_name(name)
@@ -28,81 +28,87 @@ class IR_Signal:
         if data is not None:
             self.set_data(data)
 
-    def set_name(self, value):
-        self.name = value
+    def set_name(self, value:str):
+        self.__name__ = value
 
-    def set_type(self, value):
+    def set_type(self, value:str):
         if value in ["raw", "parsed"]:
-            self.type = value
+            self.__type__ = value
         else:
             raise ValueError("Invalid type format")
 
-    def set_protocol(self, value):
-        self.protocol = value
+    def set_protocol(self, value:str):
+        self.__protocol__ = value
 
-    def set_address(self, value):
-        self.address = int(value, 16)
+    def set_address(self, value:str):
+        self.__address__ = value
 
-    def set_command(self, value):
-        self.command = int(value, 16)
+    def set_command(self, value:str):
+        self.__command__ = value
 
-    def set_frequency(self, value):
-        self.frequency = int(value)
+    def set_frequency(self, value:str):
+        self.__frequency__ = int(value)
 
-    def set_duty_cycle(self, value):
-        self.duty_cycle = float(value)
+    def set_duty_cycle(self, value:str):
+        self.__duty_cycle__ = float(value)
 
-    def set_data(self, value):
-        self.data = [int(val) for val in value]
-
-    def get_str_number(self):
-        return self.str_number
+    def set_data(self, value:list):
+        self.__data__ = [int(val) for val in value]
 
     def get_name(self):
-        return self.name
+        return self.__name__
 
     def get_type(self):
-        return self.type
+        return self.__type__
 
     def get_protocol(self):
-        return self.protocol
+        return self.__protocol__
 
     def get_address(self):
-        return self.address
+        return self.__address__
 
     def get_command(self):
-        return self.command
+        return self.__command__
 
     def get_frequency(self):
-        return self.frequency
+        return self.__frequency__
 
     def get_duty_cycle(self):
-        return self.duty_cycle
+        return self.__duty_cycle__
 
     def get_data(self):
-        return self.data
+        return self.__data__
 
-    def compare_data(self, other_data):
-        if len(self.data) != len(other_data):
+    def compare_data(self, other_data) -> bool:
+        if len(self.__data__) != len(other_data):
             return False
 
-        for i in range(len(self.data)):
-            if abs(self.data[i] - other_data[i]) > RAW_DATA_COMPARSION_LIMIT:
+        for i in range(len(self.__data__)):
+            if abs(self.__data__[i] - other_data[i]) > RAW_DATA_COMPARSION_LIMIT:
                 return False
 
         return True
+    
+    def compare(self, other_signal:'IR_Signal') -> bool:
+        if self.get_type() != other_signal.get_type():
+            return False
+
+        if self.get_type() == "raw":
+            return self.compare_data(other_signal.get_data())
+        else:
+            return (self.get_protocol() == other_signal.get_protocol()) and (self.get_address() == other_signal.get_address()) and (self.get_command() == other_signal.get_command())
 
     def __str__(self):
-        protocol = "" if self.get_protocol() is None else "Protocol: "+str(self.get_protocol())+"\n"
-        address = "" if self.get_address() is None else "Address: "+str(self.get_address())+"\n"
-        command = "" if self.get_command() is None else "Command: "+str(self.get_command())+"\n"
-        frequency = "" if self.get_frequency() is None else "Frequency: "+str(self.get_frequency())+"\n"
-        duty_cycle = "" if self.get_duty_cycle is None else "Duty_cycle: "+str(self.get_duty_cycle())+"\n"
-        data = "" if self.get_data() is None else "Data: "+str(self.get_data())+"\n"
+        protocol = "" if self.get_protocol() is None else "protocol: "+str(self.get_protocol())+"\n"
+        address = "" if self.get_address() is None else "address: "+str(self.get_address())+"\n"
+        command = "" if self.get_command() is None else "command: "+str(self.get_command())+"\n"
+        frequency = "" if self.get_frequency() is None else "frequency: "+str(self.get_frequency())+"\n"
+        duty_cycle = "" if self.get_duty_cycle() is None else "duty_cycle: "+str(self.get_duty_cycle())+"\n"
+        data = "" if self.get_data() is None else "data: "+str(self.get_data())+"\n"
 
-        return f"Name: {self.name}\nType: {self.type}\n{protocol}{address}{command}{frequency}{duty_cycle}{data}"
+        return f"Name: {self.__name__}\nType: {self.__type__}\n{protocol}{address}{command}{frequency}{duty_cycle}{data}"
 
-def parse_ir_file(file_path):
+def parse_ir_file(file_path:str) -> list:
     signals = []
     current_signal = IR_Signal()
 

@@ -21,7 +21,7 @@ def main():
 
     for signal_1 in signals_1:
         for signal_2 in signals_2:
-            if signal_1.compare_data(signal_2.get_data()):
+            if signal_1.compare(signal_2):
                 print(f"{'='*50}\nPOTENTIAL MATCH FOUND:\nIN {args.file1} SIGNAL\n\n{str(signal_1)}\nSEEMS LIKE\n\n{str(signal_2)}\nIN {args.file2}\n{'='*50}\n\n{'*'*80}\n")
 
 if __name__ == "__main__":
